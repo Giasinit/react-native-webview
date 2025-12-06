@@ -1,6 +1,6 @@
 /**
  * High-Performance WebView Messaging Example
- * 
+ *
  * This example demonstrates how to send 100MB JSON payloads every second
  * between React Native and WebView without performance degradation.
  */
@@ -33,10 +33,14 @@ const HighPerformanceMessagingExample = () => {
 
   // Message batcher for efficient sending
   const batcherRef = useRef(
-    new MessageBatcher((messages) => {
-      const batch = JSON.stringify({ type: 'batch', messages });
-      webViewRef.current?.postMessage(batch);
-    }, 10, 16)
+    new MessageBatcher(
+      (messages) => {
+        const batch = JSON.stringify({ type: 'batch', messages });
+        webViewRef.current?.postMessage(batch);
+      },
+      10,
+      16
+    )
   );
 
   /**
@@ -54,7 +58,7 @@ const HighPerformanceMessagingExample = () => {
     const sampleItem = {
       id: Math.random().toString(36),
       name: 'Sample Item',
-      description: 'A' .repeat(1000), // 1KB of data
+      description: 'A'.repeat(1000), // 1KB of data
       nested: {
         field1: Math.random(),
         field2: Date.now(),
@@ -80,11 +84,17 @@ const HighPerformanceMessagingExample = () => {
    */
   const sendLargePayloadToWebView = useCallback(() => {
     perfMonitorRef.current.start('send-100mb', 100 * 1024 * 1024);
-    
+
     const payload = generateLargePayload(100);
     const chunks = splitIntoChunks(payload, 1024 * 1024); // 1MB chunks
 
-    console.log(`Sending ${chunks.length} chunks (${(JSON.stringify(payload).length / 1024 / 1024).toFixed(2)}MB)`);
+    console.log(
+      `Sending ${chunks.length} chunks (${(
+        JSON.stringify(payload).length /
+        1024 /
+        1024
+      ).toFixed(2)}MB)`
+    );
 
     chunks.forEach((chunk) => {
       const message = JSON.stringify(chunk);
@@ -128,12 +138,12 @@ const HighPerformanceMessagingExample = () => {
       if (message.type === 'chunk') {
         // Reassemble chunks
         const completeData = reassemblerRef.current.addChunk(message);
-        
+
         if (completeData) {
           perfMonitorRef.current.start('receive-parse');
           const data = JSON.parse(completeData);
           perfMonitorRef.current.end('receive-parse');
-          
+
           console.log('Received complete payload:', {
             size: `${(completeData.length / 1024 / 1024).toFixed(2)}MB`,
             items: data.items?.length || 0,
