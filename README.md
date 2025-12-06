@@ -60,6 +60,30 @@ const MyWebComponent = () => {
 
 For more, read the [API Reference](./docs/Reference.md) and [Guide](./docs/Guide.md). If you're interested in contributing, check out the [Contributing Guide](./docs/Contributing.md).
 
+### High-Performance Messaging
+
+Need to send large payloads (100MB+) at high frequencies (1Hz+) between React Native and WebView without lag?
+
+Check out our **[High-Performance Messaging Guide](./docs/HighPerformanceMessaging.md)** ([Italian version](./docs/HighPerformanceMessaging.italian.md)) for:
+- Chunked data transfer for large payloads
+- Message batching to reduce bridge overhead
+- Performance monitoring utilities
+- Complete examples and benchmarks
+
+```tsx
+import { splitIntoChunks, ChunkReassembler } from 'react-native-webview';
+
+// Split large data into chunks
+const chunks = splitIntoChunks(largeData, 1024 * 1024); // 1MB chunks
+
+// Send chunks efficiently
+chunks.forEach(chunk => webViewRef.current?.postMessage(JSON.stringify(chunk)));
+
+// Reassemble on the other side
+const reassembler = new ChunkReassembler();
+const completeData = reassembler.addChunk(chunk);
+```
+
 ### Common issues
 
 - If you're getting `Invariant Violation: Native component for "RNCWebView does not exist"` it likely means you forgot to run `react-native link` or there was some error with the linking process
