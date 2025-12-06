@@ -70,7 +70,7 @@ export function splitIntoChunks(
   const dataString = typeof data === 'string' ? data : JSON.stringify(data);
   const messageId = generateMessageId();
   const chunks: ChunkedMessage[] = [];
-  const totalChunks = Math.ceil(dataString.length / chunkSize);
+  const totalChunks = Math.max(1, Math.ceil(dataString.length / chunkSize)); // At least 1 chunk
 
   for (let i = 0; i < totalChunks; i++) {
     const start = i * chunkSize;
@@ -310,7 +310,7 @@ export function generateWebViewScript(): string {
     var dataString = typeof data === 'string' ? data : JSON.stringify(data);
     var messageId = generateMessageId();
     var chunks = [];
-    var totalChunks = Math.ceil(dataString.length / chunkSize);
+    var totalChunks = Math.max(1, Math.ceil(dataString.length / chunkSize)); // At least 1 chunk
     
     for (var i = 0; i < totalChunks; i++) {
       var start = i * chunkSize;
